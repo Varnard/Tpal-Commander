@@ -9,15 +9,11 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -25,107 +21,70 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.AbstractTableModel;
 
 public class CommanderUI {
 
-	final Path C = Paths.get("C:/");
-	final Path D = Paths.get("D:/");
+	String C ="C:/";
+	String D = "D:/";
 	
-	    @SuppressWarnings("serial")
-		class MyTableModel extends AbstractTableModel 
-		{
-	    		    	
-	    	SimpleDateFormat sdf;
-	    	final int columns=5;
-	    	int rows;
-	    	
-	    	final String[] columnNames = {"","File Name", "File Type","Size", "Last modified"}; 
-	    	Object data[][];
-		    
-	    	
-		        
-		    MyTableModel()
-		    {
-		    	sdf = new SimpleDateFormat("dd-MM-yyyy");
-		    	update(new File("C:/"));
-		    }
-		    
-		    public void update(File file)
-		    {
-		    	File[] fileList=file.listFiles();
-		    	rows=fileList.length;
-		    	data= new Object[rows][columns];
-		    	
-		    	for (int i=0; i<rows;i++)
-		    	{
-		    		File tmp = fileList[i];		    		
-		    		
-		    		String[] fileName= tmp.getName().split("\\.");
-		    		if (fileName!=null)
-		    		{
-		    		data[i][0]="";
-		    		data[i][1]=fileName[0];
-		    		if (tmp.isDirectory())data[i][2]="<DIR>";
-		    		else data[i][2]=fileName[1];
-		    		data[i][3]=tmp.length();
-		    		if (tmp.lastModified()==0)data[i][4]="";
-		    		else data[i][4]=sdf.format(tmp.lastModified());
-		    		}
-		    		
-		    	}
-		    	
-		    	
-		    	
-		    }
-		    
-			@Override
-			public int getColumnCount() {
-				return columns;
-			}
-			
-			
-			@Override
-			public String getColumnName(int column)
-			{
-				return columnNames[column];
-			}
-
-			@Override
-			public int getRowCount() {
-				return rows;
-			}
-
-			@Override
-			public Object getValueAt(int row, int column) {
-				return data[row][column];
-			}
-	    }
-	    
+   
 	    private CommanderUI() {
 	    }
 	    
 
 	    private JComponent createMainPanel() {        
 
-			JTable tableLeft = new JTable(new MyTableModel());
+	    	final MyTableModel leftTableModel = new MyTableModel();
+			final JTable tableLeft = new JTable(leftTableModel);
 			tableLeft.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			tableLeft.setShowGrid(false);
-			tableLeft.setBackground(Color.WHITE);
+			tableLeft.getColumnModel().getColumn(0).setPreferredWidth(0);
+			tableLeft.getColumnModel().getColumn(1).setPreferredWidth(150);
+			tableLeft.getColumnModel().getColumn(2).setPreferredWidth(50);
+			tableLeft.getColumnModel().getColumn(3).setPreferredWidth(70);
+			tableLeft.getColumnModel().getColumn(4).setPreferredWidth(80);
 			
-			JTable tableRight = new JTable(new MyTableModel());
+			final MyTableModel rightTableModel = new MyTableModel();
+			final JTable tableRight = new JTable(rightTableModel);
 			tableRight.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			tableRight.setShowGrid(false);
+			tableRight.getColumnModel().getColumn(0).setPreferredWidth(0);
+			tableRight.getColumnModel().getColumn(1).setPreferredWidth(150);
+			tableRight.getColumnModel().getColumn(2).setPreferredWidth(50);
+			tableRight.getColumnModel().getColumn(3).setPreferredWidth(70);
+			tableRight.getColumnModel().getColumn(4).setPreferredWidth(80);
 			
-			JComboBox comboBoxLeft = new JComboBox();
+			final JComboBox comboBoxLeft = new JComboBox();
 			comboBoxLeft.setEditable(true);
 			comboBoxLeft.addItem(C);
 			comboBoxLeft.addItem(D);
+			comboBoxLeft.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					File newFile = new File((String)comboBoxLeft.getSelectedItem());
+					if (newFile.isDirectory())
+					{
+					leftTableModel.update(newFile);
+					tableLeft.updateUI();
+					}
+				}
+			});
 			
-			JComboBox comboBoxRight = new JComboBox();
+			
+			final JComboBox comboBoxRight = new JComboBox();
 			comboBoxRight.setEditable(true);
 			comboBoxRight.addItem(C);
 			comboBoxRight.addItem(D);
+			comboBoxRight.addActionListener(new ActionListener()
+					{
+						public void actionPerformed(ActionEvent e)
+						{
+							String pathName = (String)comboBoxRight.getSelectedItem();
+							rightTableModel.update(new File(pathName));
+							tableRight.updateUI();
+						}
+					});
 			
 			final JPanel supPanelLeft = new JPanel();
 			supPanelLeft.setLayout(new BorderLayout());
