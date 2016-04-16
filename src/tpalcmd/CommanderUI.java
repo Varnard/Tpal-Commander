@@ -3,8 +3,14 @@ package tpalcmd;
 
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -23,21 +29,59 @@ import javax.swing.table.AbstractTableModel;
 
 public class CommanderUI {
 
+	final Path C = Paths.get("C:/");
+	final Path D = Paths.get("D:/");
+	
 	    @SuppressWarnings("serial")
-		static class MyTableModel extends AbstractTableModel 
+		class MyTableModel extends AbstractTableModel 
 		{
-	    	String[] columnNames = {"","File Name", "File Type",
-		            "Size", "Last modified"};
-		        Object[][] data = {
-		        	{ "Kathy", "Smith", "Snowboarding", new Integer(5), new Boolean(false) },
-		        	{ "John", "Doe", "Rowing", new Integer(3), new Boolean(true) },
-		        	{ "Sue", "Black", "Knitting", new Integer(2), new Boolean(false) },
-		        	{ "Jane", "White", "Speed reading", new Integer(20), new Boolean(true) },
-		        	{ "Joe", "Brown", "Pool", new Integer(10), new Boolean(false) }};
+	    		    	
+	    	SimpleDateFormat sdf;
+	    	final int columns=5;
+	    	int rows;
 	    	
+	    	final String[] columnNames = {"","File Name", "File Type","Size", "Last modified"}; 
+	    	Object data[][];
+		    
+	    	
+		        
+		    MyTableModel()
+		    {
+		    	sdf = new SimpleDateFormat("dd-MM-yyyy");
+		    	update(new File("C:/"));
+		    }
+		    
+		    public void update(File file)
+		    {
+		    	File[] fileList=file.listFiles();
+		    	rows=fileList.length;
+		    	data= new Object[rows][columns];
+		    	
+		    	for (int i=0; i<rows;i++)
+		    	{
+		    		File tmp = fileList[i];		    		
+		    		
+		    		String[] fileName= tmp.getName().split("\\.");
+		    		if (fileName!=null)
+		    		{
+		    		data[i][0]="";
+		    		data[i][1]=fileName[0];
+		    		if (tmp.isDirectory())data[i][2]="<DIR>";
+		    		else data[i][2]=fileName[1];
+		    		data[i][3]=tmp.length();
+		    		if (tmp.lastModified()==0)data[i][4]="";
+		    		else data[i][4]=sdf.format(tmp.lastModified());
+		    		}
+		    		
+		    	}
+		    	
+		    	
+		    	
+		    }
+		    
 			@Override
 			public int getColumnCount() {
-				return 5;
+				return columns;
 			}
 			
 			
@@ -49,7 +93,7 @@ public class CommanderUI {
 
 			@Override
 			public int getRowCount() {
-				return 5;
+				return rows;
 			}
 
 			@Override
@@ -65,21 +109,29 @@ public class CommanderUI {
 	    private JComponent createMainPanel() {        
 
 			JTable tableLeft = new JTable(new MyTableModel());
-			JTable tableRight = new JTable(new MyTableModel());
 			tableLeft.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			tableLeft.setShowGrid(false);
+			tableLeft.setBackground(Color.WHITE);
+			
+			JTable tableRight = new JTable(new MyTableModel());
 			tableRight.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			tableRight.setShowGrid(false);
 			
 			JComboBox comboBoxLeft = new JComboBox();
 			comboBoxLeft.setEditable(true);
+			comboBoxLeft.addItem(C);
+			comboBoxLeft.addItem(D);
+			
 			JComboBox comboBoxRight = new JComboBox();
 			comboBoxRight.setEditable(true);
+			comboBoxRight.addItem(C);
+			comboBoxRight.addItem(D);
 			
 			final JPanel supPanelLeft = new JPanel();
 			supPanelLeft.setLayout(new BorderLayout());
 			supPanelLeft.add(new JScrollPane(tableLeft), BorderLayout.CENTER);
 			supPanelLeft.add(comboBoxLeft, BorderLayout.NORTH);
+			
 		
 			
 			final JPanel supPanelRight = new JPanel();
@@ -92,6 +144,7 @@ public class CommanderUI {
 	        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 			panel.add(supPanelLeft);
 			panel.add(supPanelRight);
+			panel.setBackground(Color.WHITE);
 			return panel;
 		}
 	    
