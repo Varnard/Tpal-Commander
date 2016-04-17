@@ -16,6 +16,7 @@ class MyTableModel extends AbstractTableModel
 	
 	final String[] columnNames = {"","File Name", "File Type","Size", "Last modified"}; 
 	Object data[][];
+	String filePaths[];
     
 	
         
@@ -27,13 +28,31 @@ class MyTableModel extends AbstractTableModel
     
     public void update(File file)
     {
-    	File[] fileList=file.listFiles();
-    	rows=fileList.length;
-    	data= new Object[rows][columns];
+    	boolean isNotRoot=(file.getParentFile()!=null);
     	
-    	for (int i=0; i<rows;i++)
+    	File[] fileList=file.listFiles();
+
+    	if (isNotRoot)
+    	{        	
+    		File[] newFileList= new File[fileList.length+1];
+    		newFileList[0]=file.getParentFile();
+        	for (int j=0;j<fileList.length;j++)
+        	{
+        		newFileList[j+1]=fileList[j];        		
+        	}
+        	fileList=newFileList;
+    	}
+    	
+		rows=fileList.length;
+		filePaths = new String[rows]; 
+		data= new Object[rows][columns];
+    	
+    	
+    	
+    	for (int i=0; i<rows ;i++)
     	{
-    		File tmp = fileList[i];		    		
+    		File tmp = fileList[i];
+    		filePaths[i] = tmp.getAbsolutePath();    		
     		
     		String[] fileName= tmp.getName().split("\\.");
     		if (fileName!=null)
@@ -54,10 +73,23 @@ class MyTableModel extends AbstractTableModel
     		
     		if (tmp.lastModified()==0)data[i][4]="";
     		else data[i][4]=sdf.format(tmp.lastModified());
-    		}
-    		
+    		}    		
     	}
-        	
+    	
+    	if (isNotRoot)
+    	{
+    		Icon upIcon = FileSystemView.getFileSystemView().getSystemIcon(new File("./asdf"));
+    		data[0][0]=upIcon;
+    		data[0][1]="[...]";
+    		data[0][2]="";
+    		data[0][3]=0;
+    		data[0][4]=0;
+    	}
+    }
+    
+    public String getFilePath (int row)
+    {
+    	return filePaths[row];
     }
     
 	@Override

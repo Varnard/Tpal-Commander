@@ -1,16 +1,17 @@
 package tpalcmd;
 
-
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ComboBoxEditor;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -21,17 +22,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.plaf.basic.BasicComboBoxEditor;
 
 public class CommanderUI {
 
-	String C ="C:/";
-	String D = "D:/";
-	
-   
 	    private CommanderUI() {
 	    }
 	    
-
 	    private JComponent createMainPanel() {        
 
 	    	final MyTableModel leftTableModel = new MyTableModel();
@@ -43,7 +40,6 @@ public class CommanderUI {
 			tableLeft.getColumnModel().getColumn(2).setPreferredWidth(50);
 			tableLeft.getColumnModel().getColumn(3).setPreferredWidth(70);
 			tableLeft.getColumnModel().getColumn(4).setPreferredWidth(80);
-			
 			final MyTableModel rightTableModel = new MyTableModel();
 			final JTable tableRight = new JTable(rightTableModel);
 			tableRight.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -52,17 +48,18 @@ public class CommanderUI {
 			tableRight.getColumnModel().getColumn(1).setPreferredWidth(150);
 			tableRight.getColumnModel().getColumn(2).setPreferredWidth(50);
 			tableRight.getColumnModel().getColumn(3).setPreferredWidth(70);
-			tableRight.getColumnModel().getColumn(4).setPreferredWidth(80);
+			tableRight.getColumnModel().getColumn(4).setPreferredWidth(80);		
+			
+			final BasicComboBoxEditor leftCBoxEditor= new BasicComboBoxEditor();
 			
 			final JComboBox comboBoxLeft = new JComboBox();
 			comboBoxLeft.setEditable(true);
-			comboBoxLeft.addItem(C);
-			comboBoxLeft.addItem(D);
+			comboBoxLeft.setEditor(leftCBoxEditor);
 			comboBoxLeft.addActionListener(new ActionListener()
 			{
 				public void actionPerformed(ActionEvent e)
 				{
-					File newFile = new File((String)comboBoxLeft.getSelectedItem());
+					File newFile = new File((String)leftCBoxEditor.getItem());
 					if (newFile.isDirectory())
 					{
 					leftTableModel.update(newFile);
@@ -70,12 +67,9 @@ public class CommanderUI {
 					}
 				}
 			});
-			
-			
+						
 			final JComboBox comboBoxRight = new JComboBox();
 			comboBoxRight.setEditable(true);
-			comboBoxRight.addItem(C);
-			comboBoxRight.addItem(D);
 			comboBoxRight.addActionListener(new ActionListener()
 					{
 						public void actionPerformed(ActionEvent e)
@@ -85,6 +79,13 @@ public class CommanderUI {
 							tableRight.updateUI();
 						}
 					});
+			
+			File[] rootList = File.listRoots();
+			for (File file : rootList)
+			{
+				comboBoxLeft.addItem(file.getPath());
+				comboBoxRight.addItem(file.getPath());
+			}
 			
 			final JPanel supPanelLeft = new JPanel();
 			supPanelLeft.setLayout(new BorderLayout());
@@ -104,6 +105,48 @@ public class CommanderUI {
 			panel.add(supPanelLeft);
 			panel.add(supPanelRight);
 			panel.setBackground(Color.WHITE);
+			
+			tableLeft.addMouseListener(new MouseListener(){
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+				
+					File selectedFile = new File(leftTableModel.getFilePath(tableLeft.getSelectedRow()));
+					if (selectedFile.isDirectory())
+					{
+						leftTableModel.update(selectedFile);
+						leftCBoxEditor.setItem(selectedFile.toString());
+						tableLeft.updateUI();						
+					}					
+					
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+			});
+			
 			return panel;
 		}
 	    
