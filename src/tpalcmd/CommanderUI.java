@@ -60,7 +60,7 @@ public class CommanderUI {
 				public void actionPerformed(ActionEvent e)
 				{
 					File newFile = new File((String)leftCBoxEditor.getItem());
-					if (leftTableModel.update(newFile))
+					if (leftTableModel.fileSelected(newFile))
 					{					
 					tableLeft.updateUI();
 					}
@@ -74,7 +74,7 @@ public class CommanderUI {
 						public void actionPerformed(ActionEvent e)
 						{							
 							String pathName = (String)comboBoxRight.getSelectedItem();
-							rightTableModel.update(new File(pathName));
+							rightTableModel.fileSelected(new File(pathName));
 							tableRight.updateUI();
 						}
 					});
@@ -113,7 +113,7 @@ public class CommanderUI {
 					if (e.getClickCount()==2)
 					{
 						File selectedFile = new File(leftTableModel.getFilePath(tableLeft.getSelectedRow()));
-						boolean needUpdate = leftTableModel.update(selectedFile);						
+						boolean needUpdate = leftTableModel.fileSelected(selectedFile);						
 						if (needUpdate)
 							{
 							tableLeft.updateUI();

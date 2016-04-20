@@ -1,5 +1,6 @@
 package tpalcmd;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.io.FilePermission;
 import java.text.SimpleDateFormat;
@@ -22,18 +23,38 @@ class MyTableModel extends AbstractTableModel
     MyTableModel()
     {
     	sdf = new SimpleDateFormat("dd-MM-yyyy");
-    	update(new File("C:/"));
+    	fileSelected(new File("C:/"));
     }
     
-    public boolean update(File file)
+    public boolean fileSelected(File file)
     {
-    	boolean result=true;
-    	
-    	if(!file.isDirectory())result=false;
-    	
+    	boolean needUpdate=true;
+   
     	if (file.canRead())
     	{
-    	    	
+    		
+    	if(!file.isDirectory())
+    		{
+    		try
+    		{
+            if(!Desktop.isDesktopSupported()){
+                System.out.println("Desktop is not supported");          
+            }
+             
+            Desktop desktop = Desktop.getDesktop();
+            if(file.exists()) desktop.open(file);      
+
+    		}
+    		catch (Exception e)
+    		{
+    			e.printStackTrace();
+    		}
+            needUpdate=false;
+    		}
+    	
+
+    	else
+    	{
     	boolean isNotRoot=(file.getParentFile()!=null);
     	
     	File[] fileList=file.listFiles();
@@ -104,9 +125,10 @@ class MyTableModel extends AbstractTableModel
     		data[0][4]=0;
     	}
     	}
-    	else result=false;
+    	}
+    	else needUpdate=false;
     	
-    return result;
+    return needUpdate;
     }
     
     private File[] removeHidden(File[] fileList)
