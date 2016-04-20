@@ -60,9 +60,8 @@ public class CommanderUI {
 				public void actionPerformed(ActionEvent e)
 				{
 					File newFile = new File((String)leftCBoxEditor.getItem());
-					if (newFile.isDirectory())
-					{
-					leftTableModel.update(newFile);
+					if (leftTableModel.update(newFile))
+					{					
 					tableLeft.updateUI();
 					}
 				}
@@ -73,7 +72,7 @@ public class CommanderUI {
 			comboBoxRight.addActionListener(new ActionListener()
 					{
 						public void actionPerformed(ActionEvent e)
-						{
+						{							
 							String pathName = (String)comboBoxRight.getSelectedItem();
 							rightTableModel.update(new File(pathName));
 							tableRight.updateUI();
@@ -111,13 +110,16 @@ public class CommanderUI {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 				
-					File selectedFile = new File(leftTableModel.getFilePath(tableLeft.getSelectedRow()));
-					if (selectedFile.isDirectory())
+					if (e.getClickCount()==2)
 					{
-						leftTableModel.update(selectedFile);
-						leftCBoxEditor.setItem(selectedFile.toString());
-						tableLeft.updateUI();						
-					}					
+						File selectedFile = new File(leftTableModel.getFilePath(tableLeft.getSelectedRow()));
+						boolean needUpdate = leftTableModel.update(selectedFile);						
+						if (needUpdate)
+							{
+							tableLeft.updateUI();
+							leftCBoxEditor.setItem(selectedFile.getAbsolutePath());
+							}
+					}
 					
 				}
 

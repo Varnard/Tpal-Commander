@@ -1,6 +1,7 @@
 package tpalcmd;
 
 import java.io.File;
+import java.io.FilePermission;
 import java.text.SimpleDateFormat;
 
 import javax.swing.Icon;
@@ -16,9 +17,7 @@ class MyTableModel extends AbstractTableModel
 	
 	final String[] columnNames = {"","File Name", "File Type","Size", "Last modified"}; 
 	Object data[][];
-	String filePaths[];
-    
-	
+	String filePaths[];	
         
     MyTableModel()
     {
@@ -26,12 +25,21 @@ class MyTableModel extends AbstractTableModel
     	update(new File("C:/"));
     }
     
-    public void update(File file)
+    public boolean update(File file)
     {
+    	boolean result=true;
+    	
+    	if(!file.isDirectory())result=false;
+    	
+    	if (file.canRead())
+    	{
+    	    	
     	boolean isNotRoot=(file.getParentFile()!=null);
     	
     	File[] fileList=file.listFiles();
 
+    	fileList=removeHidden(fileList);
+    	
     	if (isNotRoot)
     	{        	
     		File[] newFileList= new File[fileList.length+1];
@@ -54,20 +62,30 @@ class MyTableModel extends AbstractTableModel
     		File tmp = fileList[i];
     		filePaths[i] = tmp.getAbsolutePath();    		
     		
-    		String[] fileName= tmp.getName().split("\\.");
-    		if (fileName!=null)
+    		
+    		if (tmp.getName()!=null)
     		{
     		Icon icon = FileSystemView.getFileSystemView().getSystemIcon(tmp);
-    		data[i][0]=icon;
-    		data[i][1]=fileName[0];
+    		data[i][0]=icon;    		
     		if (tmp.isDirectory())
     			{
+    			data[i][1]=tmp.getName();
     			data[i][2]="<DIR>";
     			data[i][3]="";
     			}
     		else 
     			{
-    			data[i][2]=fileName[1];
+    			String[] fileName= tmp.getName().split("\\.");
+    			if (fileName.length>1 && !(fileName[0].equals("")))
+    				{
+    				data[i][1]=fileName[0];
+    				data[i][2]=fileName[1];
+    				}
+    			else 
+    				{
+    				data[i][1]=tmp.getName();
+    				data[i][2]="FILE";
+    				}
     			data[i][3]=convertSize(tmp.length());
     			}
     		
@@ -84,6 +102,36 @@ class MyTableModel extends AbstractTableModel
     		data[0][2]="";
     		data[0][3]=0;
     		data[0][4]=0;
+    	}
+    	}
+    	else result=false;
+    	
+    return result;
+    }
+    
+    private File[] removeHidden(File[] fileList)
+    {
+    	File[] withoutHidden;
+    	int i=fileList.length;
+    	for (File test : fileList)
+    	{    		
+    		if (test.isHidden())i--;  
+    	}
+    	
+    	if (i==fileList.length) return fileList;
+    	else
+    	{
+    		File[] newFileList = new File[i];
+    		i=0;
+    		for (int j=0;j<fileList.length;j++)
+    		{
+    			if (!fileList[j].isHidden())
+    			{
+    				newFileList[i]=fileList[j];
+    				i++;
+    			}
+    		}
+    	return newFileList;
     	}
     }
     
