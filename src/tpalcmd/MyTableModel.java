@@ -35,20 +35,7 @@ class MyTableModel extends AbstractTableModel
     		
     	if(!file.isDirectory())
     		{
-    		try
-    		{
-            if(!Desktop.isDesktopSupported()){
-                System.out.println("Desktop is not supported");          
-            }
-             
-            Desktop desktop = Desktop.getDesktop();
-            if(file.exists()) desktop.open(file);      
-
-    		}
-    		catch (Exception e)
-    		{
-    			e.printStackTrace();
-    		}
+    		openFile(file);
             needUpdate=false;
     		}
     	
@@ -122,13 +109,31 @@ class MyTableModel extends AbstractTableModel
     		data[0][1]="[...]";
     		data[0][2]="";
     		data[0][3]=0;
-    		data[0][4]=0;
+    		data[0][4]="";
     	}
     	}
     	}
     	else needUpdate=false;
     	
     return needUpdate;
+    }
+    
+    private void openFile(File file)
+    {
+		try
+		{
+        if(!Desktop.isDesktopSupported()){
+            System.out.println("Desktop is not supported");          
+        }
+         
+        Desktop desktop = Desktop.getDesktop();
+        if(file.exists()) desktop.open(file);      
+
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
     }
     
     private File[] removeHidden(File[] fileList)

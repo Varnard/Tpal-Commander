@@ -9,6 +9,8 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ComboBoxEditor;
@@ -23,14 +25,22 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableRowSorter;
 
 public class CommanderUI {
+	
+	//TODO: skalowanie ui
+	//TODO: buttony
+	//TODO: obsluga plikow
+	//TODO: lokalizacja
+	//TODO: Sprzatnac
 
 	    private CommanderUI() {
 	    }
 	    
-	    private JComponent createMainPanel() {        
-
+	    private JComponent createMainPanel() {        	    	
+	    	
 	    	final MyTableModel leftTableModel = new MyTableModel();
 			final JTable tableLeft = new JTable(leftTableModel);
 			tableLeft.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -40,6 +50,8 @@ public class CommanderUI {
 			tableLeft.getColumnModel().getColumn(2).setPreferredWidth(50);
 			tableLeft.getColumnModel().getColumn(3).setPreferredWidth(70);
 			tableLeft.getColumnModel().getColumn(4).setPreferredWidth(80);
+			tableLeft.setAutoCreateRowSorter(true);
+			
 			final MyTableModel rightTableModel = new MyTableModel();
 			final JTable tableRight = new JTable(rightTableModel);
 			tableRight.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -50,8 +62,7 @@ public class CommanderUI {
 			tableRight.getColumnModel().getColumn(3).setPreferredWidth(70);
 			tableRight.getColumnModel().getColumn(4).setPreferredWidth(80);		
 			
-			final BasicComboBoxEditor leftCBoxEditor= new BasicComboBoxEditor();
-			
+			final BasicComboBoxEditor leftCBoxEditor= new BasicComboBoxEditor();			
 			final JComboBox comboBoxLeft = new JComboBox();
 			comboBoxLeft.setEditable(true);
 			comboBoxLeft.setEditor(leftCBoxEditor);
@@ -61,7 +72,8 @@ public class CommanderUI {
 				{
 					File newFile = new File((String)leftCBoxEditor.getItem());
 					if (leftTableModel.fileSelected(newFile))
-					{					
+					{
+					leftTableModel.fireTableStructureChanged();
 					tableLeft.updateUI();
 					}
 				}
@@ -106,6 +118,7 @@ public class CommanderUI {
 			panel.setBackground(Color.WHITE);
 			
 			tableLeft.addMouseListener(new MouseListener(){
+			
 
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -115,10 +128,11 @@ public class CommanderUI {
 						File selectedFile = new File(leftTableModel.getFilePath(tableLeft.getSelectedRow()));
 						boolean needUpdate = leftTableModel.fileSelected(selectedFile);						
 						if (needUpdate)
-							{
+						{
+							leftTableModel.fireTableStructureChanged();
 							tableLeft.updateUI();
 							leftCBoxEditor.setItem(selectedFile.getAbsolutePath());
-							}
+						}
 					}
 					
 				}
