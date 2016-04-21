@@ -108,7 +108,7 @@ class MyTableModel extends AbstractTableModel
     		data[0][0]=upIcon;
     		data[0][1]="[...]";
     		data[0][2]="";
-    		data[0][3]=0;
+    		data[0][3]="";
     		data[0][4]="";
     	}
     	}
