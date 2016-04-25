@@ -6,7 +6,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
+import javax.swing.ComboBoxEditor;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -16,10 +19,13 @@ import javax.swing.plaf.basic.BasicComboBoxEditor;
 
 public class FileViewPanel extends JPanel{
 	
-	public FileViewPanel(){
-		
-	final MyTableModel tableModel = new MyTableModel();
-	final JTable table = new JTable(tableModel);
+	private JTable table;	
+	private ComboBoxEditor cBoxEditor;
+	
+	public FileViewPanel(Locale locale){		
+	
+	final MyTableModel tableModel = new MyTableModel(locale);
+	table = new JTable(tableModel);
 	table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	table.setShowGrid(false);
 	table.getColumnModel().getColumn(0).setPreferredWidth(0);
@@ -29,7 +35,7 @@ public class FileViewPanel extends JPanel{
 	table.getColumnModel().getColumn(4).setPreferredWidth(80);
 	table.setAutoCreateRowSorter(true);
 	
-	final BasicComboBoxEditor cBoxEditor= new BasicComboBoxEditor();			
+	cBoxEditor= new BasicComboBoxEditor();			
 	final JComboBox comboBox = new JComboBox();
 	comboBox.setEditable(true);
 	comboBox.setEditor(cBoxEditor);
@@ -103,5 +109,14 @@ public class FileViewPanel extends JPanel{
 	
 
 }	
+	
+	public void updateLanguage(Locale locale)
+	{
+		MyTableModel mtm = (MyTableModel)table.getModel();
+		mtm.setLanguage(locale);
+		mtm.fileSelected(new File((String)cBoxEditor.getItem()));
+		
+		table.updateUI();
+	}
 
 }

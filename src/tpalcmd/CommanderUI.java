@@ -2,6 +2,8 @@ package tpalcmd;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -10,6 +12,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Comparator;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -28,23 +32,26 @@ import javax.swing.ListSelectionModel;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableRowSorter;
-
+ 
 public class CommanderUI {
 	
 	//TODO: skalowanie ui
-	//TODO: buttony
 	//TODO: obsluga plikow
 	//TODO: lokalizacja
 	//TODO: Sprzatnac
 
+	FileViewPanel supPanelLeft;		
+	FileViewPanel supPanelRight;
+	ButtonPanel buttonPanel;
+	
 	    private CommanderUI() {
 	    }
 	    
 	    private JComponent createMainPanel() {    	    	
-	    				
-			final FileViewPanel supPanelLeft = new FileViewPanel();		
-			
-			final FileViewPanel supPanelRight = new FileViewPanel();		
+	    				 
+	    	Locale locale = new Locale("EN");
+	    	supPanelLeft = new FileViewPanel(locale);
+	    	supPanelRight= new FileViewPanel(locale);	
 	        		
 	        final JPanel filePanel = new JPanel();
 	        filePanel.setLayout(new BoxLayout(filePanel, BoxLayout.X_AXIS));
@@ -52,45 +59,54 @@ public class CommanderUI {
 			filePanel.add(supPanelRight);
 			filePanel.setBackground(Color.WHITE);
 			
-			final JPanel buttonPanel = new JPanel();
-			buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-			buttonPanel.add(Box.createHorizontalGlue());
-			buttonPanel.add(new JButton("F3 View"));
-			buttonPanel.add(Box.createHorizontalGlue());
-			buttonPanel.add(new JButton("F4 Edit"));
-			buttonPanel.add(Box.createHorizontalGlue());
-			buttonPanel.add(new JButton("F5 Copy"));
-			buttonPanel.add(Box.createHorizontalGlue());
-			buttonPanel.add(new JButton("F6 Move"));
-			buttonPanel.add(Box.createHorizontalGlue());
-			buttonPanel.add(new JButton("F7 New Folder"));
-			buttonPanel.add(Box.createHorizontalGlue());
-			buttonPanel.add(new JButton("F8 Delete"));
-			buttonPanel.add(Box.createHorizontalGlue());
-			buttonPanel.add(new JButton("Alt + F4 Exit"));
-			buttonPanel.add(Box.createHorizontalGlue());
+			buttonPanel = new ButtonPanel(locale);
 			
 			final JPanel mainPanel = new JPanel();
 			mainPanel.setLayout(new BorderLayout());
-			mainPanel.add(filePanel, BorderLayout.NORTH);
+			mainPanel.add(filePanel, BorderLayout.CENTER);
 			mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 			
 			return mainPanel;
 		}
 	    
 	    private JMenuBar createMainMenuBar() {
-	        final JMenu fileMenu = new JMenu("File");
-	        final JMenuItem closeItem = new JMenuItem("Close");
+	        final JMenu fileMenu;
+	        final JMenuItem closeItem;
+	        fileMenu = new JMenu("File");	     
+	        closeItem = new JMenuItem("Close");
 	        closeItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					System.exit(0);
 				}
 			});
 	        fileMenu.add(closeItem);
-	        
-	        final JMenu languageMenu = new JMenu("Language");
+	        final JMenu help = new JMenu("Help");
+	        final JMenu languageMenu;
+	        languageMenu = new JMenu("Language");
 	        final JMenuItem english = new JMenuItem("English");
+	        english.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					updateLanguage(new Locale("EN"));
+					fileMenu.setText("File");
+					closeItem.setText("Close");
+					languageMenu.setText("Language");
+					help.setText("Help");
+				}
+			});
 	        final JMenuItem polish = new JMenuItem("Polski");
+	        polish.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					updateLanguage(new Locale("PL"));
+					fileMenu.setText("Plik");
+					closeItem.setText("Zamknij");
+					languageMenu.setText("Jêzyk");
+					help.setText("Help");
+				}
+			});
 	        languageMenu.add(polish);
 	        languageMenu.add(english);
 	        
@@ -98,11 +114,18 @@ public class CommanderUI {
 	    	menuBar.add(fileMenu);
 	    	menuBar.add(languageMenu);
 	    	menuBar.add(Box.createHorizontalGlue());
-	    	menuBar.add(new JMenu("Help"));
+	    	menuBar.add(help);
 
 	        return menuBar;
 	    }
 
+	    private void updateLanguage(Locale locale)
+	    {
+	    	supPanelLeft.updateLanguage(locale);
+			supPanelRight.updateLanguage(locale);
+			buttonPanel.updateLanguage(locale);	
+	    }
+	    
 	    public static void main(String [] args) {
 	        final CommanderUI instance = new CommanderUI();
 

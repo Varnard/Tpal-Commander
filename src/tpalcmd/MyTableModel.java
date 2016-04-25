@@ -4,6 +4,8 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.FilePermission;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.swing.Icon;
 import javax.swing.filechooser.FileSystemView;
@@ -15,14 +17,17 @@ class MyTableModel extends AbstractTableModel
 	SimpleDateFormat sdf;
 	final int columns=5;
 	int rows;
-	
-	final String[] columnNames = {"","File Name", "File Type","Size", "Last modified"}; 
+	String dirString;
+	String fileString;
+	String[] columnNames;
 	Object data[][];
 	String filePaths[];	
         
-    MyTableModel()
+    MyTableModel(Locale locale)
     {
-    	sdf = new SimpleDateFormat("dd-MM-yyyy");
+    	columnNames = new String[5];
+    	columnNames[0] = "";
+    	setLanguage(locale);
     	fileSelected(new File("C:/"));
     }
     
@@ -78,7 +83,7 @@ class MyTableModel extends AbstractTableModel
     		if (tmp.isDirectory())
     			{
     			data[i][1]=tmp.getName();
-    			data[i][2]="<DIR>";
+    			data[i][2]=dirString;
     			data[i][3]="";
     			}
     		else 
@@ -92,7 +97,7 @@ class MyTableModel extends AbstractTableModel
     			else 
     				{
     				data[i][1]=tmp.getName();
-    				data[i][2]="FILE";
+    				data[i][2]=fileString;
     				}
     			data[i][3]=convertSize(tmp.length());
     			}
@@ -173,7 +178,6 @@ class MyTableModel extends AbstractTableModel
 		return columns;
 	}	
 	
-	
 	@Override
 	public String getColumnName(int column)
 	{
@@ -221,5 +225,16 @@ class MyTableModel extends AbstractTableModel
 		return result;
 	}
 	
-	
+	public void setLanguage (Locale locale)
+	{
+		ResourceBundle rb = ResourceBundle.getBundle("Language", locale);
+		columnNames[1]=rb.getString("column1");
+		columnNames[2]=rb.getString("column2");
+		columnNames[3]=rb.getString("column3");
+		columnNames[4]=rb.getString("column4");
+		dirString=rb.getString("dir");
+		fileString=rb.getString("file");
+    	sdf = new SimpleDateFormat("dd-MM-yyyy");
+    	fireTableStructureChanged();
+	}
 }
