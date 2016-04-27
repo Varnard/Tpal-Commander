@@ -40,8 +40,8 @@ public class CommanderUI {
 	//TODO: lokalizacja
 	//TODO: Sprzatnac
 
-	FileViewPanel supPanelLeft;		
-	FileViewPanel supPanelRight;
+	private static FileViewPanel supPanelLeft;		
+	private static FileViewPanel supPanelRight;
 	ButtonPanel buttonPanel;
 	
 	    private CommanderUI() {
@@ -50,16 +50,15 @@ public class CommanderUI {
 	    private JComponent createMainPanel() {    	    	
 	    				 
 	    	Locale locale = new Locale("EN");
-	    	supPanelLeft = new FileViewPanel(locale);
-	    	supPanelRight= new FileViewPanel(locale);	
+	    	supPanelLeft = new FileViewPanel(locale, "left");
+	    	supPanelRight= new FileViewPanel(locale, "right");	
 	        		
 	        final JPanel filePanel = new JPanel();
 	        filePanel.setLayout(new BoxLayout(filePanel, BoxLayout.X_AXIS));
 			filePanel.add(supPanelLeft);
 			filePanel.add(supPanelRight);
-			filePanel.setBackground(Color.WHITE);
 			
-			buttonPanel = new ButtonPanel(locale);
+			buttonPanel = new ButtonPanel(locale, supPanelLeft, supPanelRight);
 			
 			final JPanel mainPanel = new JPanel();
 			mainPanel.setLayout(new BorderLayout());
@@ -126,14 +125,18 @@ public class CommanderUI {
 			buttonPanel.updateLanguage(locale);	
 	    }
 	    
+	    
 	    public static void main(String [] args) {
 	        final CommanderUI instance = new CommanderUI();
-
+	        
 	        final JFrame frame = new JFrame(CommanderUI.class.getName());	        
 	        frame.getContentPane().add(instance.createMainPanel());
 	        frame.setJMenuBar(instance.createMainMenuBar());
 	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.pack();
 	        frame.setVisible(true);
+	        
+	        FileManager.setLeftPanel(supPanelLeft);
+	        FileManager.setRightPanel(supPanelRight);
 	    }
 }

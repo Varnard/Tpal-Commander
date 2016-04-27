@@ -13,11 +13,16 @@ import javax.swing.JPanel;
 
 public class ButtonPanel extends JPanel {
 	
+	FileViewPanel leftPanel;
+	FileViewPanel rightPanel;
+	
 	String[] optionsText;
 	String exitText;
 	String exitTitle;
 	String deleteText;
 	String deleteTitle;
+	String newFolderText;
+	String newFolderTitle;
 	JButton f3;
 	JButton f4;
 	JButton f5;
@@ -26,8 +31,11 @@ public class ButtonPanel extends JPanel {
 	JButton f8;
 	JButton altf4;
 	
-	public ButtonPanel(Locale locale)
+	public ButtonPanel(Locale locale, FileViewPanel rightPanel, FileViewPanel leftPanel)
 	{
+		this.rightPanel=rightPanel;
+		this.leftPanel=leftPanel;
+		
 		optionsText=new String[2];
 		setLayout(new GridLayout(1,7));
 		
@@ -67,6 +75,8 @@ public class ButtonPanel extends JPanel {
 		exitText=rb.getString("exitText");
 		deleteTitle=rb.getString("deleteTitle");
 		deleteText=rb.getString("deleteText");
+		newFolderText=rb.getString("newFolderText");
+		newFolderTitle=rb.getString("newFolderTitle");
 		f3.setText(rb.getString("F3"));
 		f4.setText(rb.getString("F4"));
 		f5.setText(rb.getString("F5"));
@@ -114,7 +124,15 @@ public class ButtonPanel extends JPanel {
 		f7.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("f7 pressed");				
+				JFrame frame = new JFrame();
+				Object[] options = optionsText;					
+				
+				String name = (String)JOptionPane.showInputDialog(
+	                    frame, newFolderText, newFolderTitle,
+	                    JOptionPane.PLAIN_MESSAGE);
+				
+				FileManager.makeFolder(name);
+			
 			}
 			
 		});	
@@ -127,7 +145,7 @@ public class ButtonPanel extends JPanel {
 				Object[] options = optionsText;
 				int n = JOptionPane.showOptionDialog(frame, deleteText, deleteTitle,
 						JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE,
+						JOptionPane.WARNING_MESSAGE,
 						null, options, options[0]);
 				if (n==0)
 				{
@@ -144,7 +162,7 @@ public class ButtonPanel extends JPanel {
 				Object[] options = optionsText;
 				int n = JOptionPane.showOptionDialog(frame,	exitText, exitTitle,
 						JOptionPane.YES_NO_OPTION,
-						JOptionPane.QUESTION_MESSAGE,
+						JOptionPane.WARNING_MESSAGE,
 						null, options, options[0]);
 				if (n==0)
 				{
