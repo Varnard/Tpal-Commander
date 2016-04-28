@@ -3,6 +3,8 @@ package tpalcmd;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -92,7 +94,7 @@ public class ButtonPanel extends JPanel {
 		f3.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("f3 pressed");				
+				FileManager.openFiles();				
 			}
 			
 		});		
@@ -100,7 +102,7 @@ public class ButtonPanel extends JPanel {
 		f4.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("f4 pressed");				
+				FileManager.editFiles();				
 			}
 			
 		});	
@@ -170,6 +172,7 @@ public class ButtonPanel extends JPanel {
 			}
 			
 		});	
+
 	}
 	
 }

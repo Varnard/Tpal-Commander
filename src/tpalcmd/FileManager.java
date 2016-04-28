@@ -1,7 +1,9 @@
 package tpalcmd;
 
+import java.awt.Desktop;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Locale;
 
 import javax.swing.SwingUtilities;
 
@@ -9,6 +11,7 @@ public class FileManager {
 	
 	private static FileViewPanel leftPanel;
 	private static FileViewPanel rightPanel;
+	private static Locale locale;
 	
 	private FileManager(){};
 	
@@ -21,6 +24,11 @@ public class FileManager {
 	{
 		leftPanel=left;
 	}	
+	
+	public static void setLocale(Locale newLocale)
+	{
+		locale=newLocale;
+	}
 	
 	public static void setActivePanel(String which)
 	{
@@ -42,6 +50,60 @@ public class FileManager {
 		leftPanel.update();
 		rightPanel.update();
 	}
+	
+    public static void openFile(File file)
+    {
+		try
+		{
+        if(!Desktop.isDesktopSupported()){
+            System.out.println("Desktop is not supported");          
+        }
+         
+        Desktop desktop = Desktop.getDesktop();
+        if(file.exists()) desktop.open(file);      
+
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+    }
+    
+    public static void openFiles()
+    {
+    	File[] files;
+		if (rightPanel.isActive())
+		{
+			files = rightPanel.getSelectedFiles();
+		}
+		else
+		{
+			files = leftPanel.getSelectedFiles();
+		}
+		
+		for (File file : files)
+		{
+			openFile(file);
+		}
+    }
+    
+    public static void editFiles()
+    {
+    	File[] files;
+		if (rightPanel.isActive())
+		{
+			files = rightPanel.getSelectedFiles();
+		}
+		else
+		{
+			files = leftPanel.getSelectedFiles();
+		}
+		
+		for (File file : files)
+		{
+			openFile(file);
+		}
+    }
 	
 	public static void makeFolder(String folderName)
 	{		
@@ -140,7 +202,7 @@ public class FileManager {
             @Override
             public void run()
             {
-                new FileCopier(filesToCopy).setVisible(true);
+                new FileCopier(filesToCopy, locale).setVisible(true);
         		
             }
         });

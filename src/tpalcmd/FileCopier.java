@@ -14,6 +14,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -42,17 +44,33 @@ public class FileCopier extends JFrame implements ActionListener, PropertyChange
     private CopyTask task;
     private File[] files;
     private int filesCount;
+    private String title;
+    private String targetLabel;
+    private String currentProgressLabel;
+    private String allProgressLabel;
+    private String copyButton;
+    private String cancelButton;    
+    
 
-    public FileCopier(File[] files)
+    public FileCopier(File[] files, Locale locale)
     {
     	this.files=files;
     	filesCount=files.length;
+    	
+    	ResourceBundle rb = ResourceBundle.getBundle("language", locale);
+    	title = rb.getString("FCTitle");
+    	targetLabel = rb.getString("FCTargetLabel");
+    	currentProgressLabel = rb.getString("FCCurrentProgressLabel");
+    	allProgressLabel = rb.getString("FCAllProgressLabel");
+    	copyButton = rb.getString("FCCopyButton");
+    	cancelButton = rb.getString("FCCancelButton");
+    	
         buildGUI();
     }
 
     private void buildGUI()
     {
-        setTitle("File Copier Utility");
+        setTitle(title);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
         addWindowListener(new WindowAdapter()
@@ -65,17 +83,17 @@ public class FileCopier extends JFrame implements ActionListener, PropertyChange
             }
         });
 
-        JLabel lblTarget = new JLabel("Target Path: ");
+        JLabel lblTarget = new JLabel(targetLabel);
         txtTarget = new JTextField(40);
         
-        JLabel lblProgressAll = new JLabel("Overall: ");
-        JLabel lblProgressCurrent = new JLabel("Current File: ");
+        JLabel lblProgressAll = new JLabel(allProgressLabel);
+        JLabel lblProgressCurrent = new JLabel(currentProgressLabel);
         progressAll = new JProgressBar(0, 100);
         progressAll.setStringPainted(true);
         progressCurrent = new JProgressBar(0, 100);
         progressCurrent.setStringPainted(true);
 
-        btnCopy = new JButton("Copy");
+        btnCopy = new JButton(copyButton);
           btnCopy.addActionListener(this);
 
         JPanel contentPane = (JPanel) getContentPane();
@@ -120,7 +138,7 @@ public class FileCopier extends JFrame implements ActionListener, PropertyChange
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        if("Copy".equals(btnCopy.getText()))
+        if(copyButton.equals(btnCopy.getText()))
         {
             File target = new File(txtTarget.getText());            
 
@@ -130,10 +148,10 @@ public class FileCopier extends JFrame implements ActionListener, PropertyChange
             task.addPropertyChangeListener(this);
             task.execute();
 
-            btnCopy.setText("Cancel");
+            btnCopy.setText(cancelButton);
             }
         }
-        else if("Cancel".equals(btnCopy.getText()))
+        else if(cancelButton.equals(btnCopy.getText()))
         {
             task.cancel(true);
             dispose();

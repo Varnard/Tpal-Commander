@@ -39,7 +39,6 @@ public class CommanderUI {
 	//TODO: lokalizacja movera i copiera
 	//TODO: delete w swingworkerze
 	//TODO: skroty klawiszowe
-	//TODO: view i edit
 	//TODO: custom sorter
 	//TODO: Sprzatnac
 
@@ -48,13 +47,14 @@ public class CommanderUI {
 	ButtonPanel buttonPanel;
 	
 	    private CommanderUI() {
-	    }
-	    
+	    }        
+        
 	    private JComponent createMainPanel() {    	    	
 	    				 
 	    	Locale locale = new Locale("EN");
 	    	supPanelLeft = new FileViewPanel(locale, "left");
 	    	supPanelRight= new FileViewPanel(locale, "right");	
+	    	FileManager.setLocale(locale);
 	        		
 	        final JPanel filePanel = new JPanel();
 	        filePanel.setLayout(new BoxLayout(filePanel, BoxLayout.X_AXIS));
@@ -67,6 +67,8 @@ public class CommanderUI {
 			mainPanel.setLayout(new BorderLayout());
 			mainPanel.add(filePanel, BorderLayout.CENTER);
 			mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+			
+			
 			
 			return mainPanel;
 		}
@@ -126,6 +128,7 @@ public class CommanderUI {
 	    	supPanelLeft.updateLanguage(locale);
 			supPanelRight.updateLanguage(locale);
 			buttonPanel.updateLanguage(locale);	
+	        FileManager.setLocale(locale);
 	    }
 	    
 	    

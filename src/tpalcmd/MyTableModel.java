@@ -40,7 +40,7 @@ class MyTableModel extends AbstractTableModel
     		
     	if(!file.isDirectory())
     		{
-    		openFile(file);
+    		FileManager.openFile(file);
             needUpdate=false;
     		}
     	
@@ -125,23 +125,6 @@ class MyTableModel extends AbstractTableModel
     return needUpdate;
     }
     
-    private void openFile(File file)
-    {
-		try
-		{
-        if(!Desktop.isDesktopSupported()){
-            System.out.println("Desktop is not supported");          
-        }
-         
-        Desktop desktop = Desktop.getDesktop();
-        if(file.exists()) desktop.open(file);      
-
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-    }
     
     private File[] removeHidden(File[] fileList)
     {
