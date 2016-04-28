@@ -36,8 +36,11 @@ import javax.swing.table.TableRowSorter;
 public class CommanderUI {
 	
 	//TODO: skalowanie ui
-	//TODO: obsluga plikow
-	//TODO: lokalizacja
+	//TODO: lokalizacja movera i copiera
+	//TODO: delete w swingworkerze
+	//TODO: skroty klawiszowe
+	//TODO: view i edit
+	//TODO: custom sorter
 	//TODO: Sprzatnac
 
 	private static FileViewPanel supPanelLeft;		

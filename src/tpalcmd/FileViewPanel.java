@@ -33,7 +33,7 @@ public class FileViewPanel extends JPanel{
 	this.whichPanel=whichPanel;
 	final MyTableModel tableModel = new MyTableModel(locale);
 	table = new JTable(tableModel);
-	table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 	table.setShowGrid(false);
 	table.getColumnModel().getColumn(0).setPreferredWidth(0);
 	table.getColumnModel().getColumn(1).setPreferredWidth(150);
@@ -119,6 +119,38 @@ public class FileViewPanel extends JPanel{
 
 }	
 	
+	public File[] getSelectedFiles()
+	{	
+		int[] selectedRows=table.getSelectedRows();
+		File[] selectedFiles;
+		if (selectedRows.length>0)
+		{
+			MyTableModel mtm = (MyTableModel)table.getModel();
+			String baseName = (String)cBoxEditor.getItem();	
+			if (new File(baseName).getParentFile()!=null) baseName+="\\";
+			selectedFiles = new File[selectedRows.length];
+			for (int i=0; i<selectedRows.length;i++)
+			{
+				if (((String)mtm.getValueAt(selectedRows[i], 2)).equals("<Dir>"))
+				{
+				String filePath = baseName + (String)mtm.getValueAt(selectedRows[i],1);
+				selectedFiles[i] = new File(filePath);
+				}
+				else
+				{
+					String filePath = baseName + (String)mtm.getValueAt(selectedRows[i],1)+
+										  "."+ (String)mtm.getValueAt(selectedRows[i],2);
+					selectedFiles[i] = new File(filePath);
+				}
+			}
+		}
+		else 
+		{
+			selectedFiles = new File[0];
+		}
+		return selectedFiles;
+	}
+	
 	public void update()
 	{
 		MyTableModel mtm = (MyTableModel)table.getModel();
@@ -134,7 +166,7 @@ public class FileViewPanel extends JPanel{
 	public void setActive()
 	{
 		active=true;
-		table.setBackground(new Color(236,242,255));
+		table.setBackground(new Color(235,240,255));
 	}
 	
 	public void setInactive()

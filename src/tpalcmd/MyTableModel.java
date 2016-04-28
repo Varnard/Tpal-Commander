@@ -88,11 +88,13 @@ class MyTableModel extends AbstractTableModel
     			}
     		else 
     			{
-    			String[] fileName= tmp.getName().split("\\.");
-    			if (fileName.length>1 && !(fileName[0].equals("")))
+    			String fileName= tmp.getName();
+    			if (fileName.contains("."))
     				{
-    				data[i][1]=fileName[0];
-    				data[i][2]=fileName[1];
+        			int j = fileName.lastIndexOf(".");
+        			String[] name =  {fileName.substring(0, j), fileName.substring(j+1)};
+     				data[i][1]=name[0];
+    				data[i][2]=name[1];
     				}
     			else 
     				{

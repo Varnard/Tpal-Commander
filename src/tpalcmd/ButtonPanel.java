@@ -108,7 +108,7 @@ public class ButtonPanel extends JPanel {
 		f5.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("f5 pressed");				
+				FileManager.copyFiles();			
 			}
 			
 		});	
@@ -116,7 +116,7 @@ public class ButtonPanel extends JPanel {
 		f6.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("f6 pressed");				
+				FileManager.moveFiles();				
 			}
 			
 		});	
@@ -140,7 +140,6 @@ public class ButtonPanel extends JPanel {
 		f8.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("f8 pressed");
 				JFrame frame = new JFrame();
 				Object[] options = optionsText;
 				int n = JOptionPane.showOptionDialog(frame, deleteText, deleteTitle,
@@ -149,7 +148,7 @@ public class ButtonPanel extends JPanel {
 						null, options, options[0]);
 				if (n==0)
 				{
-					
+					FileManager.deleteSelectedFiles();
 				}
 			}
 			
