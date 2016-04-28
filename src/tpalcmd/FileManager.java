@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.Locale;
 
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 public class FileManager {
 	
@@ -157,6 +158,8 @@ public class FileManager {
 		refresh();
 	}
 	
+	
+	
 	public static void moveFiles()
 	{
 		File[] files;
@@ -210,36 +213,50 @@ public class FileManager {
 		
 	}
 	
-	private static void delete(File file)
-	{
-		if (file.isDirectory())
-		{
-			File[] subFiles = file.listFiles();
-			for(File subFile : subFiles)
-			{
-				delete(subFile);
-			}
-			try
-			{
-				file.delete();
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		else
-		{
-			try 
-			{
-				file.delete();
-			} 
-			catch (Exception e) 
-			{
-				e.printStackTrace();
-			}
-		}		
-		refresh();
-	}
+	private static void delete(final File file)
+	{               
+		new SwingWorker<Object, Void>() {
+        public Object doInBackground() {
+                        	if (file.isDirectory())
+                    		{
+                    			File[] subFiles = file.listFiles();
+                    			for(File subFile : subFiles)
+                    			{
+                    				delete(subFile);
+                    			}
+                    			try
+                    			{
+                    				file.delete();
+                    			}
+                    			catch (Exception e)
+                    			{
+                    				e.printStackTrace();
+                    			}
+                    		}
+                    		else
+                    		{
+                    			try 
+                    			{
+                    				file.delete();
+                    			} 
+                    			catch (Exception e) 
+                    			{
+                    				e.printStackTrace();
+                       	
+                    			}
+                    		}
+            
+            return null;
+        }
 
+        // this method is called on the main event dispatching thread
+        public void done() {
+        	
+    		refresh();
+ 
+        }
+    }.execute();
+				
+
+	}
 }
