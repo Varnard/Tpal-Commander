@@ -179,7 +179,7 @@ public class FileManager {
             @Override
             public void run()
             {
-                new FileMover(filesToMove).setVisible(true);        		
+                new FileMover(filesToMove, locale).setVisible(true);        		
             }
         });
 		}
@@ -216,35 +216,35 @@ public class FileManager {
 	private static void delete(final File file)
 	{               
 		new SwingWorker<Object, Void>() {
-        public Object doInBackground() {
-                        	if (file.isDirectory())
-                    		{
-                    			File[] subFiles = file.listFiles();
-                    			for(File subFile : subFiles)
-                    			{
-                    				delete(subFile);
-                    			}
-                    			try
-                    			{
-                    				file.delete();
-                    			}
-                    			catch (Exception e)
-                    			{
-                    				e.printStackTrace();
-                    			}
-                    		}
-                    		else
-                    		{
-                    			try 
-                    			{
-                    				file.delete();
-                    			} 
-                    			catch (Exception e) 
-                    			{
-                    				e.printStackTrace();
-                       	
-                    			}
-                    		}
+        public Object doInBackground()
+        {
+        	if (file.isDirectory())
+        	{
+        		File[] subFiles = file.listFiles();
+         		for(File subFile : subFiles)
+         		{
+         		delete(subFile);
+         		}
+         		try
+         		{
+         			file.delete();
+        		}
+        			catch (Exception e)
+         		{
+        			e.printStackTrace();
+        		}
+        	}
+        	else
+        	{
+        		try 
+        		{
+        			file.delete();
+            	} 
+            		catch (Exception e)
+        		{
+            		e.printStackTrace();               	
+        		}
+        	}
             
             return null;
         }

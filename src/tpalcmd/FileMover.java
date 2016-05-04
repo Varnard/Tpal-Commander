@@ -14,6 +14,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -31,6 +33,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultCaret;
 
+import org.w3c.dom.ProcessingInstruction;
+
 public class FileMover extends JFrame implements ActionListener, PropertyChangeListener
 {
     private static final long serialVersionUID = 1L;
@@ -42,17 +46,32 @@ public class FileMover extends JFrame implements ActionListener, PropertyChangeL
     private CopyTask task;
     private File[] files;
     private int filesCount;
+    private String title;
+    private String targetLabel;
+    private String currentProgressLabel;
+    private String allProgressLabel;
+    private String moveButton;
+    private String cancelButton; 
 
-    public FileMover(File[] files)
+    public FileMover(File[] files, Locale locale)
     {
     	this.files=files;
     	filesCount=files.length;
+    	
+    	ResourceBundle rb = ResourceBundle.getBundle("language", locale);
+    	title = rb.getString("FMTitle");
+    	targetLabel = rb.getString("FMTargetLabel");
+    	currentProgressLabel = rb.getString("FMCurrentProgressLabel");
+    	allProgressLabel = rb.getString("FMAllProgressLabel");
+    	moveButton = rb.getString("FMMoveButton");
+    	cancelButton = rb.getString("FMCancelButton");
+    	
         buildGUI();
     }
 
     private void buildGUI()
     {
-        setTitle("File Mover Utility");
+        setTitle(title);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
         addWindowListener(new WindowAdapter()
@@ -65,18 +84,18 @@ public class FileMover extends JFrame implements ActionListener, PropertyChangeL
             }
         });
 
-        JLabel lblTarget = new JLabel("Target Path: ");
+        JLabel lblTarget = new JLabel(targetLabel);
         txtTarget = new JTextField(40);
         
-        JLabel lblProgressAll = new JLabel("Overall: ");
-        JLabel lblProgressCurrent = new JLabel("Current File: ");
+        JLabel lblProgressAll = new JLabel(allProgressLabel);
+        JLabel lblProgressCurrent = new JLabel(currentProgressLabel);
         progressAll = new JProgressBar(0, 100);
         progressAll.setStringPainted(true);
         progressCurrent = new JProgressBar(0, 100);
         progressCurrent.setStringPainted(true);
 
-        btnMove = new JButton("Copy");
-          btnMove.addActionListener(this);
+        btnMove = new JButton(moveButton);
+        btnMove.addActionListener(this);
 
         JPanel contentPane = (JPanel) getContentPane();
         contentPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -120,7 +139,7 @@ public class FileMover extends JFrame implements ActionListener, PropertyChangeL
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        if("Copy".equals(btnMove.getText()))
+        if(moveButton.equals(btnMove.getText()))
         {
             File target = new File(txtTarget.getText());            
 
@@ -130,10 +149,10 @@ public class FileMover extends JFrame implements ActionListener, PropertyChangeL
             task.addPropertyChangeListener(this);
             task.execute();
 
-            btnMove.setText("Cancel");
+            btnMove.setText(cancelButton);
             }
         }
-        else if("Cancel".equals(btnMove.getText()))
+        else if(cancelButton.equals(btnMove.getText()))
         {
             task.cancel(true);
             dispose();
