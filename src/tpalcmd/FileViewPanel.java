@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -19,10 +20,11 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 public class FileViewPanel extends JPanel{
 	
-	private JTable table;	
+	private FileTable table;	
 	private ComboBoxEditor cBoxEditor;
 	private boolean active;
 	private String whichPanel;
@@ -31,17 +33,8 @@ public class FileViewPanel extends JPanel{
 		
 	active=false;
 	this.whichPanel=whichPanel;
-	final MyTableModel tableModel = new MyTableModel(locale);
-	table = new JTable(tableModel);
-	table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-	table.setShowGrid(false);
-	table.getColumnModel().getColumn(0).setPreferredWidth(0);
-	table.getColumnModel().getColumn(1).setPreferredWidth(150);
-	table.getColumnModel().getColumn(2).setPreferredWidth(50);
-	table.getColumnModel().getColumn(3).setPreferredWidth(70);
-	table.getColumnModel().getColumn(4).setPreferredWidth(80);
-	table.setAutoCreateRowSorter(true);	
-	
+	table = new FileTable(locale);
+		
 	cBoxEditor= new BasicComboBoxEditor();			
 	final JComboBox comboBox = new JComboBox();
 	comboBox.setEditable(true);
@@ -51,9 +44,10 @@ public class FileViewPanel extends JPanel{
 		public void actionPerformed(ActionEvent e)
 		{
 			File newFile = new File((String)cBoxEditor.getItem());
-			if (tableModel.fileSelected(newFile))
+			MyTableModel mtm = (MyTableModel)table.getModel();
+			if (mtm.fileSelected(newFile))
 			{
-			tableModel.fireTableStructureChanged();
+			mtm.fireTableDataChanged();
 			table.updateUI();
 			//FileManager.setActivePanel(whichPanel);
 			}
@@ -79,11 +73,12 @@ public class FileViewPanel extends JPanel{
 			
 			if (e.getClickCount()==2)
 			{
-				File selectedFile = new File(tableModel.getFilePath(table.getSelectedRow()));
-				boolean needUpdate = tableModel.fileSelected(selectedFile);						
+				MyTableModel mtm = (MyTableModel)table.getModel();
+				File selectedFile = new File(mtm.getFilePath(table.getRowSorter().convertRowIndexToModel(table.getSelectedRow())));
+				boolean needUpdate = mtm.fileSelected(selectedFile);						
 				if (needUpdate)
 				{
-					tableModel.fireTableStructureChanged();
+					mtm.fireTableDataChanged();
 					table.updateUI();
 					cBoxEditor.setItem(selectedFile.getAbsolutePath());					
 				}

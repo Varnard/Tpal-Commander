@@ -4,24 +4,26 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.FilePermission;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.swing.Icon;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableRowSorter;
 
 class MyTableModel extends AbstractTableModel 
 {
 		    	
-	SimpleDateFormat sdf;
 	final int columns=5;
 	int rows;
 	String dirString;
 	String fileString;
 	String[] columnNames;
 	Object data[][];
-	String filePaths[];	
+	String filePaths[];
+	Locale locale;
         
     MyTableModel(Locale locale)
     {
@@ -29,8 +31,10 @@ class MyTableModel extends AbstractTableModel
     	columnNames[0] = "";
     	setLanguage(locale);
     	fileSelected(new File("C:/"));
+    	this.locale=locale;
     }
-    
+
+     
     public boolean fileSelected(File file)
     {
     	boolean needUpdate=true;
@@ -84,7 +88,7 @@ class MyTableModel extends AbstractTableModel
     			{
     			data[i][1]=tmp.getName();
     			data[i][2]=dirString;
-    			data[i][3]="";
+    			data[i][3]=new MySize(0);
     			}
     		else 
     			{
@@ -101,11 +105,10 @@ class MyTableModel extends AbstractTableModel
     				data[i][1]=tmp.getName();
     				data[i][2]=fileString;
     				}
-    			data[i][3]=convertSize(tmp.length());
-    			}
-    		
-    		if (tmp.lastModified()==0)data[i][4]="";
-    		else data[i][4]=sdf.format(tmp.lastModified());
+    			data[i][3]=new MySize(tmp.length());
+    			}   	
+
+    		data[i][4]= new MyDate(tmp.lastModified(),locale);
     		}    		
     	}
     	
@@ -113,10 +116,10 @@ class MyTableModel extends AbstractTableModel
     	{
     		Icon upIcon = FileSystemView.getFileSystemView().getSystemIcon(new File("./asdf"));
     		data[0][0]=upIcon;
-    		data[0][1]="[...]";
+    		data[0][1]="[..]";
     		data[0][2]="";
-    		data[0][3]="";
-    		data[0][4]="";
+    		data[0][3]= new MySize(-1);
+    		data[0][4]= new MyDate(-1,locale);
     	}
     	}
     	}
@@ -170,45 +173,24 @@ class MyTableModel extends AbstractTableModel
 	}
 
 	@Override
-	public int getRowCount() {
+	public int getRowCount() 
+	{
 		return rows;
 	}
 
 	@Override
-	public Object getValueAt(int row, int column) {
+	public Object getValueAt(int row, int column) 
+	{
 		return data[row][column];
-	}
+	}	
+	
 	
 	public Class getColumnClass(int column)
     {
         return getValueAt(0, column).getClass();
     }
 	
-	private String convertSize(Long size)
-	{
-		String result="";
-		if(size/1024>0)
-		{
-			Long x=size/1024;
-			
-			if(x/1024>0)
-			{
-				x=x/1024;
-				
-				if(x/1024>0)
-				{
-					x=x/1024;
-					
-				}
-				else result=x.toString()+"MB";
-				
-			}			
-			else result = x.toString()+"kB";
-		}
-		else result=size.toString() + "B";
-			
-		return result;
-	}
+
 	
 	public void setLanguage (Locale locale)
 	{
@@ -219,7 +201,6 @@ class MyTableModel extends AbstractTableModel
 		columnNames[4]=rb.getString("column4");
 		dirString=rb.getString("dir");
 		fileString=rb.getString("file");
-    	sdf = new SimpleDateFormat("dd-MM-yyyy");
-    	fireTableStructureChanged();
+    	fireTableDataChanged();
 	}
 }
