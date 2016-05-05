@@ -5,11 +5,13 @@ import java.io.File;
 import java.nio.file.Path;
 import java.util.Locale;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 public class FileManager {
-	
+	private final static SecurityManager sm = System.getSecurityManager();
 	private static FileViewPanel leftPanel;
 	private static FileViewPanel rightPanel;
 	private static Locale locale;
@@ -31,6 +33,12 @@ public class FileManager {
 		locale=newLocale;
 	}
 	
+	
+	public static SecurityManager getSecurityManager() 
+	{
+		return sm;
+	}
+
 	public static void setActivePanel(String which)
 	{
 		if (which.equals("left"))
@@ -124,8 +132,15 @@ public class FileManager {
 		File newFolder = new File(baseName+folderName);
 		if (!newFolder.exists())
 		{
+			try
+			{
 			newFolder.mkdir();
 			refresh();
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -227,18 +242,29 @@ public class FileManager {
          		}
          		try
          		{
-         			file.delete();
+        			if (file.delete());
+        			else
+        			{
+        				JFrame frame = new JFrame();
+        				JOptionPane.showMessageDialog(frame, "Cannot delete the file");
+        			}
         		}
         			catch (Exception e)
          		{
-        			e.printStackTrace();
+        			e.printStackTrace();        			
         		}
         	}
         	else
         	{
         		try 
         		{
-        			file.delete();
+        			if (file.delete());
+        			else
+        			{
+        				JFrame frame = new JFrame();
+        				JOptionPane.showMessageDialog(frame, "Cannot delete the file");
+        			}
+        			
             	} 
             		catch (Exception e)
         		{

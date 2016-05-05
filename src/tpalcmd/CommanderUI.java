@@ -36,7 +36,6 @@ import javax.swing.table.TableRowSorter;
 public class CommanderUI {
 	
 	//TODO: skalowanie ui
-	//TODO: skroty klawiszowe
 	//TODO: Sprzatnac
 
 	private static FileViewPanel supPanelLeft;		

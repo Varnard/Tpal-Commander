@@ -9,6 +9,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.swing.Icon;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableRowSorter;
@@ -29,20 +31,18 @@ class MyTableModel extends AbstractTableModel
     {
     	columnNames = new String[5];
     	columnNames[0] = "";
-    	setLanguage(locale);
-    	fileSelected(new File("C:/"));
     	this.locale=locale;
+    	setLanguage(locale);    	
+    	fileSelected(new File("C:/"));
     }
 
      
     public boolean fileSelected(File file)
     {
     	boolean needUpdate=true;
-   
-    	if (file.canRead())
+    	try
     	{
-    		
-    	if(!file.isDirectory())
+    		if(!file.isDirectory())
     		{
     		FileManager.openFile(file);
             needUpdate=false;
@@ -58,7 +58,7 @@ class MyTableModel extends AbstractTableModel
     	fileList=removeHidden(fileList);
     	
     	if (isNotRoot)
-    	{        	
+    	{       		
     		File[] newFileList= new File[fileList.length+1];
     		newFileList[0]=file.getParentFile();
         	for (int j=0;j<fileList.length;j++)
@@ -123,7 +123,12 @@ class MyTableModel extends AbstractTableModel
     	}
     	}
     	}
-    	else needUpdate=false;
+    	catch (Exception e) 
+    	{
+			System.out.println("Nie mozna otworzyc pliku");
+			JFrame frame = new JFrame();
+			JOptionPane.showMessageDialog(frame, "Cannot open the file");
+		}
     	
     return needUpdate;
     }
@@ -131,28 +136,34 @@ class MyTableModel extends AbstractTableModel
     
     private File[] removeHidden(File[] fileList)
     {
-    	File[] withoutHidden;
-    	int i=fileList.length;
-    	for (File test : fileList)
-    	{    		
-    		if (test.isHidden())i--;  
-    	}
-    	
-    	if (i==fileList.length) return fileList;
-    	else
+    	if (fileList!=null)
     	{
-    		File[] newFileList = new File[i];
-    		i=0;
-    		for (int j=0;j<fileList.length;j++)
+    		File[] withoutHidden;
+
+    		int i=fileList.length;
+    		for (File test : fileList)
+    		{    		
+    			if (test.isHidden())i--;  
+    		}
+    	
+    		if (i==fileList.length) return fileList;
+    		else
     		{
+    			File[] newFileList = new File[i];
+    			i=0;
+    			for (int j=0;j<fileList.length;j++)
+    			{
     			if (!fileList[j].isHidden())
     			{
     				newFileList[i]=fileList[j];
-    				i++;
+    					i++;
+    				}
     			}
+    		return newFileList;
     		}
-    	return newFileList;
     	}
+    	else
+    	return fileList;
     }
     
     public String getFilePath (int row)
@@ -194,6 +205,7 @@ class MyTableModel extends AbstractTableModel
 	
 	public void setLanguage (Locale locale)
 	{
+		this.locale=locale;
 		ResourceBundle rb = ResourceBundle.getBundle("Language", locale);
 		columnNames[1]=rb.getString("column1");
 		columnNames[2]=rb.getString("column2");
@@ -201,6 +213,6 @@ class MyTableModel extends AbstractTableModel
 		columnNames[4]=rb.getString("column4");
 		dirString=rb.getString("dir");
 		fileString=rb.getString("file");
-    	fireTableDataChanged();
+    	fireTableStructureChanged();
 	}
 }

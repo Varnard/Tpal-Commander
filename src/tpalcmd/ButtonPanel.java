@@ -126,8 +126,7 @@ public class ButtonPanel extends JPanel {
 		f7.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				JFrame frame = new JFrame();
-				Object[] options = optionsText;					
+				JFrame frame = new JFrame();			
 				
 				String name = (String)JOptionPane.showInputDialog(
 	                    frame, newFolderText, newFolderTitle,

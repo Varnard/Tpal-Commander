@@ -11,7 +11,8 @@ public class MyDate{
 	
 	public MyDate (long time, Locale locale)
 	{
-		sdf = new SimpleDateFormat("dd-MM-yyyy");
+		if (locale.equals(new Locale("EN")))sdf = new SimpleDateFormat("dd/MM/yyyy");
+		else sdf = new SimpleDateFormat("yyyy-MM-dd");
 		this.time=time;
 		
 		if (time==-1)text="";
